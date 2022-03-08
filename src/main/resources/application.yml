@@ -1,0 +1,64 @@
+server:
+  port: '9191'
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: EMPLOYEESERVICE
+          uri: lb://EMPLOYEESERVICE
+          predicates:
+          - Path=/employee/**
+          filters:
+          - name : CircuitBreaker
+            args:
+              name : EMPLOYEESERVICE
+              fallbackUri: forward:/employeeFallback
+        - id: DEPARTMENTSERVICE
+          uri: lb://DEPARTMENTSERVICE
+          predicates:
+          - Path=/departments/**
+          filters:
+          - name : CircuitBreaker
+            args:
+              name : DEPARTMENTSERVICE
+              fallbackUri: forward:/departmentFallback
+      filter:
+        circuit-breaker:
+          enabled: true
+         
+  application:
+    name: APIGATEWAY
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: 'true'
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    fetch-registry: 'true'
+    
+     
+resilience4j:
+  circuitbreaker:
+    instances:
+      CircuitBreaker:
+        permitted-number-of-calls-in-half-open-state: '3'
+        event-consumer-buffer-size: '10'
+        sliding-window-size: '10'
+        wait-duration-in-open-state: 3s
+        sliding-window-type: count-based
+        register-health-indicator: 'false'
+        failure-rate-threshold: '50'
+        automatic-transition-from-open-to-half-open-enabled: 'true'
+        minimum-number-of-calls: '5'
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+      web:
+        exposure:
+          include: health
+  endpoint:
+    health:
+      show-details: always    
