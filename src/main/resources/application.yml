@@ -1,7 +1,15 @@
 server:
   port: '9191'
+
 spring:
+  application:
+    name: APIGATEWAY
+  config:
+      import: optional:configserver:http://localhost:9293
   cloud:
+    config:
+      uri:
+      - http://localhost:9293
     gateway:
       routes:
         - id: EMPLOYEESERVICE
@@ -25,18 +33,14 @@ spring:
       filter:
         circuit-breaker:
           enabled: true
-         
-  application:
-    name: APIGATEWAY
-eureka:
-  instance:
-    hostname: localhost
-  client:
-    register-with-eureka: 'true'
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-    fetch-registry: 'true'
+   
+
+
+
     
+
+    
+
      
 resilience4j:
   circuitbreaker:
@@ -47,10 +51,12 @@ resilience4j:
         sliding-window-size: '10'
         wait-duration-in-open-state: 3s
         sliding-window-type: count-based
-        register-health-indicator: 'false'
+        register-health-indicator: 'true'
         failure-rate-threshold: '50'
         automatic-transition-from-open-to-half-open-enabled: 'true'
         minimum-number-of-calls: '5'
+
+        
 management:
   health:
     circuitbreakers:
@@ -58,7 +64,8 @@ management:
   endpoints:
       web:
         exposure:
-          include: health
+          include: '*'
   endpoint:
     health:
       show-details: always    
+      
