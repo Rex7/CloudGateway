@@ -1,30 +1,26 @@
 package com.example.demo.controller;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 @RestController
 @RefreshScope
 public class FallBackController {
 
- 
-	
-	@GetMapping("/employeeFallback")	
-	public String employeeServicellFallback() {
-		System.out.print("employeeCalled");
-		return "fallback to employee service due to service unavailbility working";
 
-	}
+    @GetMapping("/order-fallback")
+    public ResponseEntity<String> orderFallback() {
+        return ResponseEntity.ok("Order Service is currently unavailable. Please try again later.");
+    }
 
-	@GetMapping("/departmentFallback")
-	public String departmentServiceFallback() {
-		System.out.print("departmentcalled");
-		return "fallback to department service due to service unavailbility";
-	}
+    @PostMapping("/payment-fallback")
+    public ResponseEntity<String> paymentFallback() {
+        return ResponseEntity.ok("Payment Service is currently unavailable. Please try again later.");
+    }
 	
 
 	
